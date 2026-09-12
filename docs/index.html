@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html lang="ru">
+  <head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <title>Игра-мозаика</title>
+    <link rel="stylesheet" href="./css/style.css">
+  </head>
+  <body>
+    <div id="app" class="app" :class="'screen-' + screen" :lang="locale">
+      <header class="topbar">
+        <h1>{{ t('heading') }}</h1>
+        <div class="lang-switch" role="group" aria-label="Language">
+          <button type="button" :class="{ active: locale === 'ru' }" @click="setLocale('ru')">RU</button>
+          <button type="button" :class="{ active: locale === 'en' }" @click="setLocale('en')">EN</button>
+        </div>
+      </header>
+
+      <main class="main">
+        <section v-if="screen === 'gallery'">
+          <p class="lead">{{ t('galleryLead') }}</p>
+          <div class="gallery">
+            <button
+              v-for="image in images"
+              :key="image.id"
+              type="button"
+              class="gallery-item"
+              :class="{ 'is-failed': failedThumbs[image.id] }"
+              @click="selectImage(image)"
+            >
+              <img
+                v-if="!failedThumbs[image.id]"
+                :src="image.url"
+                :alt="imageTitle(image)"
+                loading="lazy"
+                draggable="false"
+                @error="onThumbError(image.id)"
+              >
+              <span v-else class="thumb-error">{{ t('imageError') }}</span>
+              <span class="caption">{{ imageTitle(image) }}</span>
+            </button>
+          </div>
+        </section>
+
+        <section v-else-if="screen === 'difficulty'" class="difficulty">
+          <div class="toolbar">
+            <button type="button" class="btn" @click="exitToGallery">{{ t('exit') }}</button>
+          </div>
+          <h2 class="lead">{{ t('difficultyTitle') }}</h2>
+          <p class="hint">{{ t('difficultyHint') }}</p>
+          <div v-if="selectedImage" class="preview-wrap">
+            <img :src="selectedImage.url" :alt="imageTitle(selectedImage)" draggable="false">
+          </div>
+          <p v-if="loadError" class="status">{{ t('imageError') }}</p>
+          <p v-else-if="!imageSize" class="status">{{ t('loading') }}</p>
+          <div v-else class="difficulty-list">
+            <button
+              v-for="option in difficultyOptions"
+              :key="option.n"
+              type="button"
+              class="difficulty-btn"
+              @click="startGame(option.n)"
+            >
+              <span class="n">{{ option.n }}</span>
+              <span class="meta">{{ option.cols }} × {{ option.rows }}</span>
+              <span class="count">{{ option.pieces }} {{ t('pieces') }}</span>
+            </button>
+          </div>
+        </section>
+
+        <section v-else-if="screen === 'game'" class="game">
+          <div class="game-toolbar">
+            <button type="button" class="btn" @click="exitToGallery">{{ t('exit') }}</button>
+            <span class="moves">{{ t('moves') }}: {{ moves }}</span>
+            <button
+              v-if="!won"
+              type="button"
+              class="btn"
+              :class="{ 'is-active': showOriginal }"
+              @click="toggleOriginal"
+            >
+              {{ showOriginal ? t('showPuzzle') : t('showOriginal') }}
+            </button>
+          </div>
+
+          <div class="board-area" :style="boardVars">
+            <div
+              class="board"
+              ref="board"
+              :class="{ 'is-flashing': flashing, 'is-complete': showComplete || showOriginal }"
+            >
+              <template v-if="!showOriginal && !showComplete">
+                <div
+                  v-for="(tile, index) in tiles"
+                  :key="tile.id"
+                  class="tile"
+                  :data-x="tile.x"
+                  :data-y="tile.y"
+                  :class="{
+                    'is-selected': selectedIndex === index,
+                    'is-source': dragState && dragState.active && dragState.index === index,
+                    'is-drop': dropIndex === index && dragState && dragState.index !== index
+                  }"
+                  :style="tile.style"
+                  @pointerdown="onPointerDown($event, index)"
+                  @pointermove="onPointerMove"
+                  @pointerup="onPointerUp"
+                  @pointercancel="onPointerCancel"
+                ></div>
+              </template>
+              <div v-else class="cropped" :style="croppedStyle"></div>
+            </div>
+          </div>
+
+          <transition name="fade">
+            <div v-if="won" class="win-panel">
+              <p class="win-title">{{ t('win') }}</p>
+              <p class="win-moves">{{ t('winMoves', { n: moves }) }}</p>
+              <button type="button" class="btn-primary" @click="exitToGallery">{{ t('newGame') }}</button>
+            </div>
+          </transition>
+        </section>
+      </main>
+
+      <div
+        v-if="dragState && dragState.active"
+        class="tile tile-ghost"
+        :style="ghostStyle"
+      ></div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/vue@3.5.42/dist/vue.global.prod.js"></script>
+    <script src="./js/images.js"></script>
+    <script src="./js/i18n.js"></script>
+    <script src="./js/puzzle.js"></script>
+    <script src="./js/app.js"></script>
+  </body>
+</html>
