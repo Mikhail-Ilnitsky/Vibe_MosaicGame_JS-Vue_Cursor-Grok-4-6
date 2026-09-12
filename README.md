@@ -2,9 +2,18 @@
 
 Адаптивная браузерная мозаика: картинка делится на квадратные фрагменты, которые нужно собрать обратно. Чистый фронтенд-SPA без базы данных и бэкенда.
 
-**Демо:** [https://mikhail-ilnitsky.github.io/Vibe_MosaicGame_JS-Vue_Cursor-Grok-4-6/](https://mikhail-ilnitsky.github.io/Vibe_MosaicGame_JS-Vue_Cursor-Grok-4-6/)
+**Демо:** [mikhail-ilnitsky.github.io/Vibe_MosaicGame_JS-Vue_Cursor-Grok-4-6](https://mikhail-ilnitsky.github.io/Vibe_MosaicGame_JS-Vue_Cursor-Grok-4-6/)
 
 В GitHub: **Settings → Pages**, источник — ветка по умолчанию, папка `/docs`.
+
+## Особенности
+
+Собрано по подробному промпту с помощью **Cursor-Grok-4.6-High-Fast**
+
+Начальный промпт (достаточный результат):
+- 9 запусков (автоматически) Cursor-Grok-4.6-High-Fast = 3071 Ktoken
+
+Всего в сумме: 3071 Ktoken = 3 Mtoken
 
 ## Возможности
 
@@ -30,10 +39,12 @@
 
 ```
 docs/
-  index.html      точка входа SPA, относительные пути
-  css/style.css   минималистичные стили и адаптив
-  js/images.js    фиксированный массив картинок
-  js/i18n.js      строки RU/EN и определение языка
-  js/puzzle.js    сетка, нарезка CSS-фоном, перемешивание
-  js/app.js       приложение Vue 3 (Options API)
+├── index.html              # точка входа SPA, относительные пути
+├── css/
+│   └── style.css           # минималистичные стили и адаптив
+└── js/
+    ├── images.js           # фиксированный массив картинок
+    ├── i18n.js             # строки RU/EN и определение языка
+    ├── puzzle.js           # сетка, нарезка CSS-фоном, перемешивание
+    └── app.js              # приложение Vue 3 (Options API)
 ```
